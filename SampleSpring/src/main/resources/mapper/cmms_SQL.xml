@@ -1,0 +1,55 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="cmms">
+	<select id="getLangugList" resultType="hashmap">
+	SELECT LANGUG_NAME
+	FROM LANGUG_CODE
+	WHERE LANGUG_CODE = 'SCREEN'
+	AND LANGUG_CODE_ID = 52
+	ORDER BY LANGUG_NO
+	</select>
+	
+	<select id="langugChange" parameterType="hashmap" resultType="hashmap">
+	SELECT LANGUG_NAME
+	FROM LANGUG_CODE
+	WHERE LANGUG_CODE ='SCREEN'
+	AND LANGUG_CODE_ID IN(0, 1, 2)
+	AND LANGUG_TYPE_ID = #{langug_select}
+	</select>
+	
+	<select id="loginCheck" parameterType="hashmap" resultType="hashmap">
+	SELECT E.EMP_NO, E.EMP_POSITN_ID, L.LANGUG_NAME as EMP_NAME, L2.LANGUG_NAME as POSITN_NAME
+	FROM EMP_CODE E INNER JOIN COMMON_CODE C
+		                ON E.EMP_POSITN_ID = C.COMMON_CODE_ID
+		                AND C.COMMON_CODE = 'POSITN'
+	                    INNER JOIN LANGUG_CODE L
+		                ON E.EMP_POSITN_ID = L.LANGUG_CODE_ID
+		                AND L.LANGUG_CODE = 'POSITN'
+		                AND L.LANGUG_TYPE_ID = #{langug_select}
+	                    INNER JOIN LANGUG_CODE L2
+	                    ON E.EMP_NO = L2.LANGUG_CODE_ID
+	                    AND L2.LANGUG_CODE = 'EMP'
+	                    AND L2.LANGUG_TYPE_ID = #{langug_select}              
+	WHERE ID = #{id}
+	AND PW = #{pw}
+	</select>
+	
+	<select id="homeLangugChange" parameterType="hashmap" resultType="hashmap">
+	SELECT LANGUG_NAME
+	FROM LANGUG_CODE
+	WHERE LANGUG_CODE = 'SCREEN'
+	AND LANGUG_CODE_ID IN (7, 8, 9, 10, 15, 17, 49, 12, 13, 14, 28, 18)
+	AND LANGUG_TYPE_ID = #{langug_select}
+	</select>
+	
+	<select id="treeload" resultType="hashmap">
+	SELECT ASSET_CODE
+	     , LEVEL
+	     , (SELECT COUNT(*) FROM MASTER START WITH ASSET_CODE = A.ASSET_CODE CONNECT BY PRIOR ASSET_CODE = ASSET_PARENT_ID) AS LOW_LV_COUNT
+	FROM MASTER A
+	WHERE 1=1
+	START WITH ASSET_PARENT_ID = 'ROOT'
+	CONNECT BY PRIOR ASSET_CODE = ASSET_PARENT_ID
+	</select>
+	
+</mapper>
